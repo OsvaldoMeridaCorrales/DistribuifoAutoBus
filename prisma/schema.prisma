@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model asientos {
+  id     Int      @id(map: "PK_asientos") @default(autoincrement()) @db.TinyInt
+  numero String?  @db.VarChar(50)
+  precio Decimal? @db.Decimal(8, 2)
+  idBus  Int?     @db.TinyInt
+  Bus    Bus?     @relation(fields: [idBus], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_asientos_Bus")
+  ticket ticket[]
+}
+
+model Bus {
+  id       Int        @id(map: "PK_Bus") @default(autoincrement()) @db.TinyInt
+  placa    String?    @db.VarChar(20)
+  modelo   String?    @db.VarChar(20)
+  asientos asientos[]
+  ruta     ruta[]
+  ticket   ticket[]
+}
+
+model Cliente {
+  id            Int       @id(map: "PK_Cliente") @default(autoincrement())
+  correo        String?   @db.NVarChar(60)
+  contrase_a    String?   @map("contraseña") @db.NVarChar(50)
+  estado        Int?      @db.TinyInt
+  fechaRegistro DateTime? @db.DateTime
+  ticket        ticket[]
+}
+
+model ruta {
+  id               Int      @id(map: "PK_ruta") @default(autoincrement()) @db.TinyInt
+  origen           String   @db.VarChar(50)
+  destino          String   @db.VarChar(50)
+  fechaHoraSalida  DateTime @db.DateTime
+  fechaHoraLlegada DateTime @db.DateTime
+  idBus            Int      @db.TinyInt
+  Bus              Bus      @relation(fields: [idBus], references: [id], onUpdate: NoAction, map: "FK_ruta_Bus")
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B615F378E14") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model ticket {
+  id            Int       @id(map: "PK_ticket") @default(autoincrement())
+  precio        Decimal?  @db.Decimal(8, 2)
+  estado        Int?      @db.TinyInt
+  fechaRegistro DateTime? @db.DateTime
+  idBus         Int?      @db.TinyInt
+  idAsiento     Int?      @db.TinyInt
+  idCliente     Int?
+  asientos      asientos? @relation(fields: [idAsiento], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ticket_asientos")
+  Bus           Bus?      @relation(fields: [idBus], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ticket_Bus")
+  Cliente       Cliente?  @relation(fields: [idCliente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ticket_Cliente")
+}

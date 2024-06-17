@@ -10,6 +10,7 @@ datasource db {
 model asientos {
   id     Int      @id(map: "PK_asientos") @default(autoincrement()) @db.TinyInt
   numero String?  @db.VarChar(50)
+  estado Int?     @default(0, map: "DF_asientos_estado") @db.TinyInt
   precio Decimal? @db.Decimal(8, 2)
   idBus  Int?     @db.TinyInt
   Bus    Bus?     @relation(fields: [idBus], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_asientos_Bus")
@@ -29,6 +30,7 @@ model Cliente {
   id            Int       @id(map: "PK_Cliente") @default(autoincrement())
   correo        String?   @db.NVarChar(60)
   contrase_a    String?   @map("contraseña") @db.NVarChar(50)
+  carnet        String?   @db.NVarChar(300)
   estado        Int?      @db.TinyInt
   fechaRegistro DateTime? @db.DateTime
   ticket        ticket[]

@@ -12,10 +12,7 @@ export default function Page() {
   const [correo, setCorreo] = useState("");
   const [carnet, setCarnet] = useState("");
 
-  function handleCorreo(e: React.ChangeEvent<HTMLInputElement>): void {
-    const value = e.target.value;
-    setCorreo(value);
-  }
+
 
   function handleCarnet(e: React.ChangeEvent<HTMLInputElement>): void {
     const value = e.target.value;
@@ -29,27 +26,57 @@ export default function Page() {
 
     //console.log(nombreD, apellidoD, razon, fechaD)
 
-    /*
+    
     try {
       const res = await axios.post("/api/cliente/", {
-        correo: correo,
-        carnet: sha256(carnet)
+        correo: user?.email,
+        carnet: sha256(carnet).toString(),
+        estado: 1,
+        fechaRegistro: new Date().toISOString()
 
       })
 
       if (res && res.data) {
-        window.location.href = '/Material/Mostrar';
+        window.location.href = '/autobuses/mostrar';
       }
     } catch (error) {
 
-    }*/
+    }
 
   }
 
   return (
     <>
       <NavBarButtons />
-      <h1>{user?.name} {user?.email}</h1>
+
+
+      {user && (
+        <>
+          <h1>{user?.name} {user?.email}</h1>
+          {user?.picture && <img src={user.picture} alt="foto" />}
+
+          <form onSubmit={handleSubmit}>
+            <Input
+              type='text'
+              label='Correo electronico'
+              value={user.email?.toString()}
+              isDisabled
+            >
+            </Input>
+            <Input
+              type='text'
+              label='Carnet'
+              value={carnet}
+              onChange={handleCarnet}
+            >
+            </Input>
+
+            <Button type="submit" >
+              Registrar
+            </Button>
+          </form>
+        </>
+      )}
 
     </>
   );
